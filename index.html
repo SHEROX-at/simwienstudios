@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SimWien Studios</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f8f8f8;
+      color: #222;
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: #fff;
+      border-bottom: 3px solid #bfa34b;
+      padding: 20px;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: #1c1c1c;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      background-color: #1c1c1c;
+      padding: 10px;
+    }
+
+    nav a {
+      color: #f8f8f8;
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #bfa34b;
+    }
+
+    section {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2 {
+      color: #1c1c1c;
+      margin-bottom: 20px;
+    }
+
+    .progress-bar {
+      background-color: #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .progress-bar-fill {
+      background-color: #bfa34b;
+      height: 20px;
+      width: 60%;
+      transition: width 0.5s ease-in-out;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+      background-color: #1c1c1c;
+      color: #f8f8f8;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>SimWien Studios</header>
+
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#progress">Progress</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <section id="home">
+    <h1>Welcome to SimWien Studios</h1>
+    <p>SimWien Studios creates realistic virtual experiences of Vienna’s transit systems, focusing on immersive gameplay and authentic design.</p>
+  </section>
+
+  <section id="about">
+    <h2>About Us</h2>
+    <p>We are passionate about recreating Vienna’s infrastructure in Roblox, delivering highly detailed and accurate projects such as Vienna Lines. Our mission is to combine realism with engaging gameplay.</p>
+  </section>
+
+  <section id="progress">
+    <h2>Project Progress</h2>
+    <p><strong>Vienna Lines</strong> – Development status:</p>
+    <div class="progress-bar">
+      <div class="progress-bar-fill"></div>
+    </div>
+    <p>Currently working on the Hütteldorf to Ober St. Veit section with full attention to detail, including stations, tunnels, and announcements.</p>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <p>Stay connected with us:</p>
+    <ul>
+      <li><a href="https://www.roblox.com/groups/" target="_blank">Roblox Group</a></li>
+      <li><a href="https://discord.com/" target="_blank">Discord</a></li>
+      <li><a href="https://instagram.com/" target="_blank">Instagram</a></li>
+    </ul>
+  </section>
+
+  <footer>
+    &copy; 2025 SimWien Studios. All rights reserved.
+  </footer>
+</body>
+</html>
