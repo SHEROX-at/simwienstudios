@@ -9,37 +9,42 @@
 <body>
   <header>
     <div class="logo">SimWien Studios</div>
+    <div class="controls">
+      <button id="lang-switch">DE</button>
+      <button id="theme-toggle">☀️</button>
+    </div>
   </header>
 
   <nav>
-    <a href="#home">Home</a>
-    <a href="#about">About</a>
-    <a href="#progress">Progress</a>
-    <a href="#contact">Contact</a>
+    <a href="#home" data-key="nav_home">Home</a>
+    <a href="#about" data-key="nav_about">About</a>
+    <a href="#progress" data-key="nav_progress">Progress</a>
+    <a href="#contact" data-key="nav_contact">Contact</a>
   </nav>
 
   <section id="home" class="fade-in">
-    <h1>Welcome to SimWien Studios</h1>
-    <p>SimWien Studios creates realistic virtual experiences of Vienna’s transit systems, focusing on immersive gameplay and authentic design.</p>
+    <h1 data-key="home_title">Welcome to SimWien Studios</h1>
+    <p data-key="home_text">SimWien Studios creates realistic virtual experiences of Vienna’s transit systems, focusing on immersive gameplay and authentic design.</p>
   </section>
 
   <section id="about" class="fade-in">
-    <h2>About Us</h2>
-    <p>We are passionate about recreating Vienna’s infrastructure in Roblox, delivering highly detailed and accurate projects such as Vienna Lines. Our mission is to combine realism with engaging gameplay.</p>
+    <h2 data-key="about_title">About Us</h2>
+    <p data-key="about_text">We are passionate about recreating Vienna’s infrastructure in Roblox, delivering highly detailed and accurate projects such as Vienna Lines. Our mission is to combine realism with engaging gameplay.</p>
   </section>
 
   <section id="progress" class="fade-in">
-    <h2>Project Progress</h2>
-    <p><strong>Vienna Lines</strong> – Development status:</p>
-    <div class="progress-bar">
-      <div class="progress-bar-fill"></div>
+    <h2 data-key="progress_title">Project Progress</h2>
+    <div class="project">
+      <p><strong>Vienna Lines</strong> – <span id="vienna-progress-text">0%</span></p>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="vienna-progress"></div>
+      </div>
     </div>
-    <p>Currently working on the Hütteldorf to Ober St. Veit section with full attention to detail, including stations, tunnels, and announcements.</p>
   </section>
 
   <section id="contact" class="fade-in">
-    <h2>Contact</h2>
-    <p>Stay connected with us:</p>
+    <h2 data-key="contact_title">Contact</h2>
+    <p data-key="contact_text">Stay connected with us:</p>
     <ul>
       <li><a href="https://www.roblox.com/groups/" target="_blank">Roblox Group</a></li>
       <li><a href="https://discord.com/" target="_blank">Discord</a></li>
