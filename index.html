@@ -31,11 +31,24 @@
       <h2>Dein Wartungs-Dashboard</h2>
       <div id="progressBars"></div>
       <div class="actions">
-        <button class="secondary" onclick="updateMileage()">Kilometerstand aktualisieren</button>
+        <button class="secondary" onclick="openMileageModal()">Kilometerstand aktualisieren</button>
         <button class="primary" onclick="goHome()">Zurück zur Startseite</button>
       </div>
     </div>
   </div>
+
+  <!-- Modal für Kilometerstand -->
+  <div id="mileageModal" class="modal" style="display:none">
+    <div class="modal-content">
+      <h3>Neuen Kilometerstand eingeben</h3>
+      <input type="number" id="newKmInput" placeholder="z.B. 125000">
+      <div class="modal-actions">
+        <button class="secondary" onclick="closeMileageModal()">Abbrechen</button>
+        <button class="primary" onclick="confirmMileageUpdate()">Speichern</button>
+      </div>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
