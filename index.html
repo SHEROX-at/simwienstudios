@@ -1,61 +1,128 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SimWien Studios</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Auto Wartungsplaner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #007aff;
+      color: #fff;
+      margin-top: 20px;
+      cursor: pointer;
+      border: none;
+    }
+    button:hover {
+      background-color: #005bb5;
+    }
+    .result {
+      margin-top: 30px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <div class="logo">SimWien Studios</div>
-    <div class="controls">
-      <button id="lang-switch">DE</button>
-      <button id="theme-toggle">☀️</button>
-    </div>
-  </header>
+  <div class="container">
+    <h1>Wartungsplaner</h1>
 
-  <nav>
-    <a href="#home" data-key="nav_home">Home</a>
-    <a href="#about" data-key="nav_about">About</a>
-    <a href="#progress" data-key="nav_progress">Progress</a>
-    <a href="#contact" data-key="nav_contact">Contact</a>
-  </nav>
+    <label>Aktueller Kilometerstand:</label>
+    <input type="number" id="kmStand" placeholder="z.B. 120000">
 
-  <section id="home" class="fade-in">
-    <h1 data-key="home_title">Welcome to SimWien Studios</h1>
-    <p data-key="home_text">SimWien Studios creates realistic virtual experiences of Vienna’s transit systems, focusing on immersive gameplay and authentic design.</p>
-  </section>
+    <label>Motoröl - letzter Wechsel (km):</label>
+    <input type="number" id="oilLast">
 
-  <section id="about" class="fade-in">
-    <h2 data-key="about_title">About Us</h2>
-    <p data-key="about_text">We are passionate about recreating Vienna’s infrastructure in Roblox, delivering highly detailed and accurate projects such as Vienna Lines. Our mission is to combine realism with engaging gameplay.</p>
-  </section>
+    <label>Kraftstofffilter - letzter Wechsel (km):</label>
+    <input type="number" id="fuelFilterLast">
 
-  <section id="progress" class="fade-in">
-    <h2 data-key="progress_title">Project Progress</h2>
-    <div class="project">
-      <p><strong>Vienna Lines</strong> – <span id="vienna-progress-text">0%</span></p>
-      <div class="progress-bar">
-        <div class="progress-bar-fill" id="vienna-progress"></div>
-      </div>
-    </div>
-  </section>
+    <label>Bremsflüssigkeit - letzter Wechsel (Datum):</label>
+    <input type="date" id="brakeFluidDate">
 
-  <section id="contact" class="fade-in">
-    <h2 data-key="contact_title">Contact</h2>
-    <p data-key="contact_text">Stay connected with us:</p>
-    <ul>
-      <li><a href="https://www.roblox.com/groups/" target="_blank">Roblox Group</a></li>
-      <li><a href="https://discord.com/" target="_blank">Discord</a></li>
-      <li><a href="https://instagram.com/" target="_blank">Instagram</a></li>
-    </ul>
-  </section>
+    <label>Luftfilter - letzter Wechsel (km):</label>
+    <input type="number" id="airFilterLast">
 
-  <footer>
-    &copy; 2025 SimWien Studios. All rights reserved.
-  </footer>
+    <label>Servolenkungsöl - letzter Wechsel (km):</label>
+    <input type="number" id="steeringOilLast">
 
-  <script src="script.js"></script>
+    <label>Zahnriemen - letzter Wechsel (km):</label>
+    <input type="number" id="timingBeltLast">
+
+    <label>Zahnriemen - bei wie viel km gewechselt:</label>
+    <input type="number" id="timingBeltChangedAt">
+
+    <label>Zahnriemen Intervall (km):</label>
+    <select id="timingInterval">
+      <option value="90000">90.000 km</option>
+      <option value="120000">120.000 km</option>
+      <option value="150000">150.000 km</option>
+    </select>
+
+    <button onclick="calculateService()">Berechnen</button>
+
+    <div id="results" class="result" style="display:none"></div>
+  </div>
+
+  <script>
+    function calculateService() {
+      const km = parseInt(document.getElementById('kmStand').value) || 0;
+      const oil = parseInt(document.getElementById('oilLast').value) || 0;
+      const fuel = parseInt(document.getElementById('fuelFilterLast').value) || 0;
+      const brakeDate = new Date(document.getElementById('brakeFluidDate').value);
+      const air = parseInt(document.getElementById('airFilterLast').value) || 0;
+      const steering = parseInt(document.getElementById('steeringOilLast').value) || 0;
+      const belt = parseInt(document.getElementById('timingBeltLast').value) || 0;
+      const beltChangedAt = parseInt(document.getElementById('timingBeltChangedAt').value) || belt;
+      const interval = parseInt(document.getElementById('timingInterval').value);
+
+      const now = new Date();
+      const brakeNext = new Date(brakeDate);
+      brakeNext.setFullYear(brakeNext.getFullYear() + 2);
+
+      const beltRemaining = interval - (km - beltChangedAt);
+
+      let results = "<h3>Nächste Services</h3>";
+      results += `<p>Ölwechsel fällig in ${15000 - (km - oil)} km</p>`;
+      results += `<p>Kraftstofffilter fällig in ${30000 - (km - fuel)} km</p>`;
+      results += `<p>Bremsflüssigkeit fällig am ${brakeNext.toLocaleDateString()}</p>`;
+      results += `<p>Luftfilter fällig in ${20000 - (km - air)} km</p>`;
+      results += `<p>Servolenkungsöl fällig in ${50000 - (km - steering)} km</p>`;
+      results += `<p>Zahnriemen fällig in ${beltRemaining} km</p>`;
+
+      document.getElementById('results').innerHTML = results;
+      document.getElementById('results').style.display = 'block';
+    }
+  </script>
 </body>
 </html>
