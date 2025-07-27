@@ -11,26 +11,26 @@
       padding: 0;
       background-color: #f4f4f4;
       color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
     .container {
-      max-width: 500px;
-      margin: 0 auto;
+      max-width: 400px;
+      background: #fff;
       padding: 20px;
-    }
-    h1 {
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       text-align: center;
-      font-size: 1.5rem;
+    }
+    h1, h2 {
       margin-bottom: 20px;
     }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    input, select, button {
+    input, button {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
+      margin-top: 10px;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 1rem;
@@ -38,90 +38,62 @@
     button {
       background-color: #007aff;
       color: #fff;
-      margin-top: 20px;
       cursor: pointer;
       border: none;
     }
     button:hover {
       background-color: #005bb5;
     }
-    .result {
-      margin-top: 30px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Wartungsplaner</h1>
-
-    <label>Aktueller Kilometerstand:</label>
-    <input type="number" id="kmStand" placeholder="z.B. 120000">
-
-    <label>Motoröl - letzter Wechsel (km):</label>
-    <input type="number" id="oilLast">
-
-    <label>Kraftstofffilter - letzter Wechsel (km):</label>
-    <input type="number" id="fuelFilterLast">
-
-    <label>Bremsflüssigkeit - letzter Wechsel (Datum):</label>
-    <input type="date" id="brakeFluidDate">
-
-    <label>Luftfilter - letzter Wechsel (km):</label>
-    <input type="number" id="airFilterLast">
-
-    <label>Servolenkungsöl - letzter Wechsel (km):</label>
-    <input type="number" id="steeringOilLast">
-
-    <label>Zahnriemen - letzter Wechsel (km):</label>
-    <input type="number" id="timingBeltLast">
-
-    <label>Zahnriemen - bei wie viel km gewechselt:</label>
-    <input type="number" id="timingBeltChangedAt">
-
-    <label>Zahnriemen Intervall (km):</label>
-    <select id="timingInterval">
-      <option value="90000">90.000 km</option>
-      <option value="120000">120.000 km</option>
-      <option value="150000">150.000 km</option>
-    </select>
-
-    <button onclick="calculateService()">Berechnen</button>
-
-    <div id="results" class="result" style="display:none"></div>
+  <div class="container" id="stepContainer">
+    <h1>Willkommen!</h1>
+    <p>Wie heißt du?</p>
+    <input type="text" id="username" placeholder="Dein Name">
+    <button onclick="nextStep()">Weiter</button>
   </div>
 
   <script>
-    function calculateService() {
-      const km = parseInt(document.getElementById('kmStand').value) || 0;
-      const oil = parseInt(document.getElementById('oilLast').value) || 0;
-      const fuel = parseInt(document.getElementById('fuelFilterLast').value) || 0;
-      const brakeDate = new Date(document.getElementById('brakeFluidDate').value);
-      const air = parseInt(document.getElementById('airFilterLast').value) || 0;
-      const steering = parseInt(document.getElementById('steeringOilLast').value) || 0;
-      const belt = parseInt(document.getElementById('timingBeltLast').value) || 0;
-      const beltChangedAt = parseInt(document.getElementById('timingBeltChangedAt').value) || belt;
-      const interval = parseInt(document.getElementById('timingInterval').value);
+    let userData = {};
+    let step = 0;
 
-      const now = new Date();
-      const brakeNext = new Date(brakeDate);
-      brakeNext.setFullYear(brakeNext.getFullYear() + 2);
+    function nextStep() {
+      const container = document.getElementById('stepContainer');
 
-      const beltRemaining = interval - (km - beltChangedAt);
+      if(step === 0) {
+        userData.name = document.getElementById('username').value || "Gast";
+        step++;
+        container.innerHTML = `<h2>Hallo ${userData.name}!</h2><p>Füge dein Auto hinzu.</p><input type='text' id='carName' placeholder='z.B. VW Golf'><button onclick='nextStep()'>Weiter</button>`;
+      } else if(step === 1) {
+        userData.car = document.getElementById('carName').value || "Unbekanntes Auto";
+        step++;
+        container.innerHTML = `<h2>${userData.car}</h2><p>Möchtest du technische Daten hinzufügen? (optional)</p><button onclick='addTech()'>Ja</button><button onclick='skipTech()'>Überspringen</button>`;
+      }
+    }
 
-      let results = "<h3>Nächste Services</h3>";
-      results += `<p>Ölwechsel fällig in ${15000 - (km - oil)} km</p>`;
-      results += `<p>Kraftstofffilter fällig in ${30000 - (km - fuel)} km</p>`;
-      results += `<p>Bremsflüssigkeit fällig am ${brakeNext.toLocaleDateString()}</p>`;
-      results += `<p>Luftfilter fällig in ${20000 - (km - air)} km</p>`;
-      results += `<p>Servolenkungsöl fällig in ${50000 - (km - steering)} km</p>`;
-      results += `<p>Zahnriemen fällig in ${beltRemaining} km</p>`;
+    function addTech() {
+      const container = document.getElementById('stepContainer');
+      step++;
+      container.innerHTML = `<h2>Technische Daten</h2><p>Kilometerstand?</p><input type='number' id='kmStand'><button onclick='startMaintenance()'>Weiter</button>`;
+    }
 
-      document.getElementById('results').innerHTML = results;
-      document.getElementById('results').style.display = 'block';
+    function skipTech() {
+      const container = document.getElementById('stepContainer');
+      step++;
+      container.innerHTML = `<h2>Kilometerstand?</h2><input type='number' id='kmStand'><button onclick='startMaintenance()'>Weiter</button>`;
+    }
+
+    function startMaintenance() {
+      userData.km = parseInt(document.getElementById('kmStand').value) || 0;
+      const container = document.getElementById('stepContainer');
+      container.innerHTML = `<h2>Motoröl</h2><p>Bei wie viel km war der letzte Wechsel?</p><input type='number' id='oilLast'><button onclick='finish()'>Weiter</button>`;
+    }
+
+    function finish() {
+      userData.oilLast = parseInt(document.getElementById('oilLast').value) || 0;
+      localStorage.setItem('wartungsDaten', JSON.stringify(userData));
+      document.getElementById('stepContainer').innerHTML = `<h2>Fertig!</h2><p>Deine Daten wurden gespeichert. Nächster Schritt: Weitere Wartungspunkte hinzufügen (bald verfügbar).</p>`;
     }
   </script>
 </body>
