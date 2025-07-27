@@ -7,10 +7,12 @@ body {
 .container { max-width:600px; width:90%; background:#fff; padding:30px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.2); text-align:center; animation:fadeIn 0.5s ease-in; }
 h1,h2 { color:#007aff; }
 button,input,select { width:100%; padding:12px; margin-top:10px; border-radius:10px; border:1px solid #ccc; font-size:1rem; }
-button { background:#007aff; color:#fff; font-weight:bold; border:none; cursor:pointer; transition:0.2s; }
-button:hover { background:#005bb5; }
+button.primary { background:#007aff; color:#fff; font-weight:bold; border:none; cursor:pointer; transition:0.2s; }
+button.secondary { background:#f4f4f4; color:#007aff; border:1px solid #007aff; font-weight:bold; cursor:pointer; }
+button.primary:hover { background:#005bb5; }
+button.secondary:hover { background:#e6e6e6; }
 .progress-container { margin:20px 0; text-align:left; }
-.progress-label { margin-bottom:5px; display:flex; align-items:center; gap:8px; }
+.progress-label { margin-bottom:5px; display:flex; align-items:center; gap:8px; font-weight:bold; }
 .progress-bar { height:20px; background:#eee; border-radius:10px; overflow:hidden; }
 .progress-fill { height:100%; background:#007aff; color:#fff; text-align:right; padding-right:5px; transition:width 0.5s ease; }
 @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
