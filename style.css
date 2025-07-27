@@ -1,129 +1,23 @@
-let userData = JSON.parse(localStorage.getItem('wartungsDaten')) || {};
-let history = JSON.parse(localStorage.getItem('wartungsHistory')) || [];
-let currentStep=0, serviceIndex=0;
-
-const steps=[
- {html:`<h1>Willkommen!</h1><p>Wie heißt du?</p><input id='username' type='text' placeholder='Dein Name'><button class='primary' onclick='next()'>Weiter</button>`,
-  action:()=>userData.name=document.getElementById('username').value||'Gast'},
- {html:()=>`<h2>Hallo ${userData.name}!</h2><p>Füge dein Auto hinzu.</p><input id='carName' type='text' value='${userData.car||''}' placeholder='z.B. VW Golf'><button class='primary' onclick='next()'>Weiter</button>`,
-  action:()=>userData.car=document.getElementById('carName').value||'Unbekanntes Auto'},
- {html:()=>`<h2>${userData.car}</h2><p>${userData.name}, wie viele Kilometer hat dein Auto?</p><input id='km' type='number' value='${userData.km||''}'><button class='primary' onclick='next()'>Weiter</button>`,
-  action:()=>userData.km=parseInt(document.getElementById('km').value)||0}
-];
-
-const services=[
- {key:'oil',label:'Motoröl',interval:15000,icon:'🛢️'},
- {key:'fuel',label:'Kraftstofffilter',interval:30000,icon:'⛽'},
- {key:'brake',label:'Bremsflüssigkeit',date:true,interval:'2 Jahre',icon:'🛑'},
- {key:'air',label:'Luftfilter',interval:20000,icon:'🌬️'},
- {key:'steering',label:'Servolenkungsöl',interval:50000,icon:'🔧'},
- {key:'belt',label:'Zahnriemen',intervalSelect:[90000,120000,150000],icon:'⚙️'}
-];
-
-function init(){ if(userData.name){ showHome(); } else { renderStep(); } }
-
-function showHome(){
-  document.getElementById('homePage').style.display='block';
-  document.getElementById('stepContainer').style.display='none';
-  document.getElementById('dashboard').style.display='none';
-  document.getElementById('userName').innerText=userData.name;
-  const list=document.getElementById('historyList'); list.innerHTML='';
-  if(history.length===0){ list.innerHTML='<p>Noch keine Berechnungen vorhanden.</p>'; }
-  history.slice(-5).forEach(h=>{
-    const btn=document.createElement('button');
-    btn.className='secondary';
-    btn.innerText=`${h.date} - ${h.car}`;
-    btn.onclick=()=>{ userData=h; showDashboard(); };
-    list.appendChild(btn);
-  });
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin:0; padding:0;
+  background:linear-gradient(135deg,#007aff,#00c6ff);
+  color:#333; display:flex; align-items:center; justify-content:center; height:100vh;
 }
-
-function startNewCalculation(){
-  currentStep=0; serviceIndex=0;
-  document.getElementById('homePage').style.display='none';
-  renderStep();
-}
-
-function renderStep(){
-  const c=document.getElementById('stepContainer');
-  c.style.display='block';
-  if(currentStep<steps.length){
-    c.innerHTML=typeof steps[currentStep].html==='function'?steps[currentStep].html():steps[currentStep].html;
-  } else { askService(); }
-}
-
-function next(){ steps[currentStep].action(); currentStep++; renderStep(); }
-
-function askService(){
-  const c=document.getElementById('stepContainer');
-  if(serviceIndex>=services.length){ return finishCalc(); }
-  const s=services[serviceIndex];
-  if(s.date){
-    c.innerHTML=`<h2>${s.label}</h2><p>${userData.name}, wann wurde das zuletzt gewechselt?</p><input type='date' id='val' value='${userData[s.key]||''}'><button class='primary' onclick='saveService()'>Weiter</button>`;
-  } else if(s.intervalSelect){
-    const opts=s.intervalSelect.map(i=>`<option value='${i}' ${userData.beltInterval===i?'selected':''}>${i} km</option>`).join('');
-    c.innerHTML=`<h2>${s.label}</h2><p>${userData.name}, bei wie viel km war der letzte Wechsel?</p><input type='number' id='val' value='${userData[s.key]||''}'><p>Intervall:</p><select id='int'>${opts}</select><button class='primary' onclick='saveService(true)'>Weiter</button>`;
-  } else {
-    c.innerHTML=`<h2>${s.label}</h2><p>${userData.name}, bei wie viel km war der letzte Wechsel?</p><input type='number' id='val' value='${userData[s.key]||''}'><button class='primary' onclick='saveService()'>Weiter</button>`;
-  }
-}
-
-function saveService(hasInt){
-  const s=services[serviceIndex];
-  if(s.date){ userData[s.key]=document.getElementById('val').value; }
-  else { userData[s.key]=parseInt(document.getElementById('val').value)||0; }
-  if(hasInt){ userData['beltInterval']=parseInt(document.getElementById('int').value); }
-  serviceIndex++; askService();
-}
-
-function finishCalc(){
-  userData.date=new Date().toLocaleDateString();
-  history.push({...userData});
-  localStorage.setItem('wartungsDaten',JSON.stringify(userData));
-  localStorage.setItem('wartungsHistory',JSON.stringify(history));
-  showDashboard();
-}
-
-function showDashboard(){
-  document.getElementById('dashboard').style.display='block';
-  document.getElementById('stepContainer').style.display='none';
-  document.getElementById('homePage').style.display='none';
-  const km=userData.km;
-  const nextBrake=new Date(userData.brake); nextBrake.setFullYear(nextBrake.getFullYear()+2);
-  const pb=document.getElementById('progressBars'); pb.innerHTML='';
-  const items=[
-    {label:'Ölwechsel',remain:15000-(km-userData.oil),icon:'🛢️',max:15000},
-    {label:'Kraftstofffilter',remain:30000-(km-userData.fuel),icon:'⛽',max:30000},
-    {label:'Bremsflüssigkeit',remain:`am ${nextBrake.toLocaleDateString()}`,icon:'🛑'},
-    {label:'Luftfilter',remain:20000-(km-userData.air),icon:'🌬️',max:20000},
-    {label:'Servolenkungsöl',remain:50000-(km-userData.steering),icon:'🔧',max:50000},
-    {label:'Zahnriemen',remain:userData.beltInterval-(km-userData.belt),icon:'⚙️',max:userData.beltInterval}
-  ];
-  items.forEach(it=>{
-    const cont=document.createElement('div'); cont.className='progress-container';
-    const isWarning = typeof it.remain==='number' && it.remain<=1000; // Warnung unter 1000km
-    cont.classList.toggle('warning',isWarning);
-    cont.innerHTML=`<div class='progress-label'>${it.icon} ${it.label}: ${typeof it.remain==='string'?it.remain:it.remain+' km'}</div>`;
-    if(typeof it.remain==='number'){ const perc=Math.max(0,Math.min(100,(it.remain/it.max)*100)); cont.innerHTML+=`<div class='progress-bar'><div class='progress-fill' style='width:${perc}%'></div></div>`; }
-    pb.appendChild(cont);
-  });
-}
-
-function openMileageModal(){
-  document.getElementById('newKmInput').value = userData.km || '';
-  document.getElementById('mileageModal').style.display='flex';
-}
-
-function closeMileageModal(){
-  document.getElementById('mileageModal').style.display='none';
-}
-
-function confirmMileageUpdate(){
-  const newKm=parseInt(document.getElementById('newKmInput').value);
-  if(!isNaN(newKm)){ userData.km=newKm; localStorage.setItem('wartungsDaten',JSON.stringify(userData)); showDashboard(); }
-  closeMileageModal();
-}
-
-function goHome(){ document.getElementById('dashboard').style.display='none'; showHome(); }
-
-init();
+.container { max-width:600px; width:90%; background:#fff; padding:30px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.2); text-align:center; animation:fadeIn 0.5s ease-in; }
+h1,h2 { color:#007aff; }
+button,input,select { width:100%; padding:12px; margin-top:10px; border-radius:10px; border:1px solid #ccc; font-size:1rem; }
+button.primary { background:#007aff; color:#fff; font-weight:bold; border:none; cursor:pointer; transition:0.2s; }
+button.secondary { background:#f4f4f4; color:#007aff; border:1px solid #007aff; font-weight:bold; cursor:pointer; }
+button.primary:hover { background:#005bb5; }
+button.secondary:hover { background:#e6e6e6; }
+.progress-container { margin:20px 0; text-align:left; padding:10px; border-radius:8px; transition:background 0.3s ease; }
+.progress-label { margin-bottom:5px; display:flex; align-items:center; gap:8px; font-weight:bold; }
+.progress-bar { height:20px; background:#eee; border-radius:10px; overflow:hidden; }
+.progress-fill { height:100%; background:#007aff; color:#fff; text-align:right; padding-right:5px; transition:width 0.5s ease; }
+.warning { background:#fff3cd; animation:blink 1.5s infinite; }
+@keyframes blink { 0%,100% { background-color:#fff3cd; } 50% { background-color:#ffeeba; } }
+.modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; }
+.modal-content { background:#fff; padding:20px; border-radius:12px; width:300px; text-align:center; }
+.modal-actions { display:flex; gap:10px; margin-top:15px; }
+@keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
