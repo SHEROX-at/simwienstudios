@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Auto Wartungsplaner Pro</title>
+  <title>Auto Wartungsplaner Ultimate</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container" id="app">
-    <!-- Hauptseite mit Verlauf und Navigation -->
+    <!-- Startseite -->
     <div id="homePage" style="display:none">
       <header>
         <h1>Willkommen zurück, <span id="userName"></span>!</h1>
@@ -16,7 +16,7 @@
       <section>
         <h2>Letzte Berechnungen</h2>
         <div id="historyList"></div>
-        <button onclick="startNewCalculation()">Neue Berechnung starten</button>
+        <button class="primary" onclick="startNewCalculation()">Neue Berechnung starten</button>
       </section>
       <footer>
         <small>&copy; 2025 Auto Wartungsplaner</small>
@@ -26,17 +26,16 @@
     <!-- Schritt-für-Schritt Abfrage -->
     <div id="stepContainer" style="display:none"></div>
 
-    <!-- Dashboard mit interaktiven Fortschrittsbalken und Icons -->
+    <!-- Dashboard -->
     <div id="dashboard" style="display:none">
       <h2>Dein Wartungs-Dashboard</h2>
       <div id="progressBars"></div>
       <div class="actions">
-        <button onclick="updateMileage()">Kilometerstand aktualisieren</button>
-        <button onclick="goHome()">Zurück zur Startseite</button>
+        <button class="secondary" onclick="updateMileage()">Kilometerstand aktualisieren</button>
+        <button class="primary" onclick="goHome()">Zurück zur Startseite</button>
       </div>
     </div>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
