@@ -27,7 +27,7 @@
     h1, h2 {
       margin-bottom: 20px;
     }
-    input, button {
+    input, button, select {
       width: 100%;
       padding: 10px;
       margin-top: 10px;
@@ -57,6 +57,15 @@
   <script>
     let userData = {};
     let step = 0;
+    let serviceIndex = 0;
+    const services = [
+      { key: 'oilLast', label: 'Motoröl', unit: 'km', interval: 15000 },
+      { key: 'fuelLast', label: 'Kraftstofffilter', unit: 'km', interval: 30000 },
+      { key: 'brakeLast', label: 'Bremsflüssigkeit', unit: 'Datum', interval: '2 Jahre' },
+      { key: 'airLast', label: 'Luftfilter', unit: 'km', interval: 20000 },
+      { key: 'steeringLast', label: 'Servolenkungsöl', unit: 'km', interval: 50000 },
+      { key: 'beltLast', label: 'Zahnriemen', unit: 'km', intervalSelect: [90000,120000,150000] }
+    ];
 
     function nextStep() {
       const container = document.getElementById('stepContainer');
@@ -75,25 +84,64 @@
     function addTech() {
       const container = document.getElementById('stepContainer');
       step++;
-      container.innerHTML = `<h2>Technische Daten</h2><p>Kilometerstand?</p><input type='number' id='kmStand'><button onclick='startMaintenance()'>Weiter</button>`;
+      container.innerHTML = `<h2>Technische Daten</h2><p>Kilometerstand?</p><input type='number' id='kmStand'><button onclick='startServiceFlow()'>Weiter</button>`;
     }
 
     function skipTech() {
       const container = document.getElementById('stepContainer');
       step++;
-      container.innerHTML = `<h2>Kilometerstand?</h2><input type='number' id='kmStand'><button onclick='startMaintenance()'>Weiter</button>`;
+      container.innerHTML = `<h2>Kilometerstand?</h2><input type='number' id='kmStand'><button onclick='startServiceFlow()'>Weiter</button>`;
     }
 
-    function startMaintenance() {
+    function startServiceFlow() {
       userData.km = parseInt(document.getElementById('kmStand').value) || 0;
+      serviceIndex = 0;
+      askNextService();
+    }
+
+    function askNextService() {
       const container = document.getElementById('stepContainer');
-      container.innerHTML = `<h2>Motoröl</h2><p>Bei wie viel km war der letzte Wechsel?</p><input type='number' id='oilLast'><button onclick='finish()'>Weiter</button>`;
+      if(serviceIndex >= services.length) {
+        finish();
+        return;
+      }
+      const s = services[serviceIndex];
+      if(s.unit === 'Datum') {
+        container.innerHTML = `<h2>${s.label}</h2><p>Wann wurde der letzte Wechsel gemacht?</p><input type='date' id='serviceInput'><button onclick='saveService()'>Weiter</button>`;
+      } else if(s.intervalSelect) {
+        container.innerHTML = `<h2>${s.label}</h2><p>Bei wie viel km war der letzte Wechsel?</p><input type='number' id='serviceInput'><p>Wähle Intervall:</p><select id='intervalSelect'>${s.intervalSelect.map(i=>`<option value="${i}">${i} km</option>`).join('')}</select><button onclick='saveService(true)'>Weiter</button>`;
+      } else {
+        container.innerHTML = `<h2>${s.label}</h2><p>Bei wie viel km war der letzte Wechsel?</p><input type='number' id='serviceInput'><button onclick='saveService()'>Weiter</button>`;
+      }
+    }
+
+    function saveService(hasInterval) {
+      const s = services[serviceIndex];
+      if(s.unit === 'Datum') {
+        userData[s.key] = document.getElementById('serviceInput').value;
+      } else {
+        userData[s.key] = parseInt(document.getElementById('serviceInput').value) || 0;
+      }
+      if(hasInterval) {
+        userData['beltInterval'] = parseInt(document.getElementById('intervalSelect').value);
+      }
+      serviceIndex++;
+      askNextService();
     }
 
     function finish() {
-      userData.oilLast = parseInt(document.getElementById('oilLast').value) || 0;
       localStorage.setItem('wartungsDaten', JSON.stringify(userData));
-      document.getElementById('stepContainer').innerHTML = `<h2>Fertig!</h2><p>Deine Daten wurden gespeichert. Nächster Schritt: Weitere Wartungspunkte hinzufügen (bald verfügbar).</p>`;
+      const container = document.getElementById('stepContainer');
+      const km = userData.km;
+      const nextBrake = new Date(userData.brakeLast);
+      nextBrake.setFullYear(nextBrake.getFullYear()+2);
+      container.innerHTML = `<h2>Übersicht</h2>
+        <p>Ölwechsel in ${15000 - (km - userData.oilLast)} km</p>
+        <p>Kraftstofffilter in ${30000 - (km - userData.fuelLast)} km</p>
+        <p>Bremsflüssigkeit am ${nextBrake.toLocaleDateString()}</p>
+        <p>Luftfilter in ${20000 - (km - userData.airLast)} km</p>
+        <p>Servolenkungsöl in ${50000 - (km - userData.steeringLast)} km</p>
+        <p>Zahnriemen in ${userData.beltInterval - (km - userData.beltLast)} km</p>`;
     }
   </script>
 </body>
