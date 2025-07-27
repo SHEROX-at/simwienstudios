@@ -8,22 +8,25 @@
 </head>
 <body>
   <div class="container" id="app">
-    <!-- Startseite mit Rechnungsübersicht und Button -->
+    <!-- Hauptseite -->
     <div id="homePage" style="display:none">
       <h1>Willkommen zurück, <span id="userName"></span>!</h1>
       <h2>Letzte Berechnungen</h2>
       <div id="historyList"></div>
       <button onclick="startNewCalculation()">Neue Berechnung starten</button>
     </div>
-    <!-- Dynamischer Schrittcontainer für Berechnung -->
+
+    <!-- Schritt-für-Schritt Abfrage -->
     <div id="stepContainer" style="display:none"></div>
-    <!-- Dashboard nach Berechnung -->
+
+    <!-- Dashboard mit Fortschrittsbalken -->
     <div id="dashboard" style="display:none">
       <h2>Dein Wartungs-Dashboard</h2>
       <div id="progressBars"></div>
       <button onclick="goHome()">Zurück zur Startseite</button>
     </div>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
