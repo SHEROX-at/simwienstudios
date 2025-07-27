@@ -4,78 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Auto Wartungsplaner</title>
-  <style>
-    body {font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; color: #333; display: flex; align-items: center; justify-content: center; height: 100vh;}
-    .container {max-width: 400px; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;}
-    h1,h2 {margin-bottom: 20px;}
-    input, button, select {width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;}
-    button {background-color: #007aff; color: #fff; cursor: pointer; border: none;}
-    button:hover {background-color: #005bb5;}
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container" id="stepContainer"></div>
-  <script>
-    const steps = [
-      {html: `<h1>Willkommen!</h1><p>Wie heißt du?</p><input id='username' type='text' placeholder='Dein Name'><button onclick='next()'>Weiter</button>`, action: () => userData.name = document.getElementById('username').value || 'Gast'},
-      {html: () => `<h2>Hallo ${userData.name}!</h2><p>Füge dein Auto hinzu.</p><input id='carName' type='text' placeholder='z.B. VW Golf'><button onclick='next()'>Weiter</button>`, action: () => userData.car = document.getElementById('carName').value || 'Unbekanntes Auto'},
-      {html: () => `<h2>${userData.car}</h2><p>Kilometerstand?</p><input id='km' type='number'><button onclick='next()'>Weiter</button>`, action: () => userData.km = parseInt(document.getElementById('km').value)||0}
-    ];
-
-    const services = [
-      {key:'oil', label:'Motoröl', interval:15000},
-      {key:'fuel', label:'Kraftstofffilter', interval:30000},
-      {key:'brake', label:'Bremsflüssigkeit', date:true, interval:'2 Jahre'},
-      {key:'air', label:'Luftfilter', interval:20000},
-      {key:'steering', label:'Servolenkungsöl', interval:50000},
-      {key:'belt', label:'Zahnriemen', intervalSelect:[90000,120000,150000]}
-    ];
-
-    let userData = {}; let currentStep = 0; let serviceIndex = 0;
-
-    function renderStep() {
-      const c = document.getElementById('stepContainer');
-      if(currentStep < steps.length){ c.innerHTML = typeof steps[currentStep].html==='function'?steps[currentStep].html():steps[currentStep].html; }
-      else { askService(); }
-    }
-
-    function next(){ steps[currentStep].action(); currentStep++; renderStep(); }
-
-    function askService(){
-      const c = document.getElementById('stepContainer');
-      if(serviceIndex>=services.length){ return showSummary(); }
-      const s = services[serviceIndex];
-      if(s.date){
-        c.innerHTML = `<h2>${s.label}</h2><p>Wann letzter Wechsel?</p><input type='date' id='val'><button onclick='saveService()'>Weiter</button>`;
-      } else if(s.intervalSelect){
-        c.innerHTML = `<h2>${s.label}</h2><p>Letzter Wechsel (km)?</p><input type='number' id='val'><p>Intervall:</p><select id='int'>${s.intervalSelect.map(i=>`<option value='${i}'>${i} km</option>`).join('')}</select><button onclick='saveService(true)'>Weiter</button>`;
-      } else {
-        c.innerHTML = `<h2>${s.label}</h2><p>Letzter Wechsel (km)?</p><input type='number' id='val'><button onclick='saveService()'>Weiter</button>`;
-      }
-    }
-
-    function saveService(intervalSel){
-      const s = services[serviceIndex];
-      if(s.date){ userData[s.key] = document.getElementById('val').value; }
-      else { userData[s.key] = parseInt(document.getElementById('val').value)||0; }
-      if(intervalSel){ userData['beltInterval']=parseInt(document.getElementById('int').value); }
-      serviceIndex++; askService();
-    }
-
-    function showSummary(){
-      localStorage.setItem('wartungsDaten', JSON.stringify(userData));
-      const km = userData.km;
-      const nextBrake = new Date(userData.brake); nextBrake.setFullYear(nextBrake.getFullYear()+2);
-      document.getElementById('stepContainer').innerHTML = `<h2>Übersicht</h2>
-        <p>Ölwechsel in ${15000 - (km-userData.oil)} km</p>
-        <p>Kraftstofffilter in ${30000 - (km-userData.fuel)} km</p>
-        <p>Bremsflüssigkeit am ${nextBrake.toLocaleDateString()}</p>
-        <p>Luftfilter in ${20000 - (km-userData.air)} km</p>
-        <p>Servolenkungsöl in ${50000 - (km-userData.steering)} km</p>
-        <p>Zahnriemen in ${userData.beltInterval - (km-userData.belt)} km</p>`;
-    }
-
-    renderStep();
-  </script>
+  <div class="container">
+    <div id="stepContainer"></div>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
